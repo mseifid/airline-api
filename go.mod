@@ -1,10 +1,11 @@
 module firefly-airline
 
-go 1.25.6
+go 1.26.8
 
 require gorm.io/gorm v1.31.2
 
 require (
+	github.com/golang-migrate/migrate/v4 v4.20.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.10.0 // indirect
@@ -14,6 +15,7 @@ require (
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/labstack/echo/v5 v5.3.1 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/text v0.40.0 // indirect
 	gorm.io/driver/postgres v1.6.3 // indirect

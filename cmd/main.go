@@ -12,18 +12,31 @@ import (
 )
 
 func main() {
+	// config loading
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("config loaded successfully")
 
-	_, err = database.Connect(cfg.DB)
+	// db
+	db, err := database.Connect(cfg.DB)
 	if err != nil {
 		log.Fatal("database connection failed:", err)
 	}
 	fmt.Println("database connection successful")
 
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := database.RunMigrations(sqlDB, "./migrations"); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("migrations applied successfully")
+
+	// API server
 	e := echo.New()
 
 	e.GET("/sample", func(c *echo.Context) error {

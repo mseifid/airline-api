@@ -19,7 +19,7 @@ Current implementation:
 * [x] Environment configuration
 * [x] GORM connection
 * [x] Echo v5 HTTP server
-* [ ] Database migrations
+* [x] Database migrations
 * [ ] Models
 * [ ] Repositories
 * [ ] Use cases / services
