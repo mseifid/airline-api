@@ -8,8 +8,9 @@ import (
 )
 
 type Config struct {
-	DB     DBConfig     `envconfig:"DB"`
-	Server ServerConfig `envconfig:"APP"`
+	DB            DBConfig     `envconfig:"DB"`
+	Server        ServerConfig `envconfig:"APP"`
+	AirlineAPIKey string       `envconfig:"AIRLINE_API_KEY"`
 }
 
 type DBConfig struct {
@@ -24,7 +25,6 @@ type DBConfig struct {
 type ServerConfig struct {
 	Port int
 }
-
 
 func Load() (Config, error) {
 	if err := godotenv.Load(); err != nil {

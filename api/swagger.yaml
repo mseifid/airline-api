@@ -1,0 +1,79 @@
+basePath: /
+definitions:
+  agency.CreateAgencyRequest:
+    properties:
+      name:
+        type: string
+      walletBalance:
+        type: integer
+    type: object
+  agency.CreateAgencyResponse:
+    properties:
+      apiKey:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      walletBalance:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API documentation for Firefly Airline
+  title: Firefly Airline API
+  version: "1.0"
+paths:
+  /internal/agencies:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new travel agency and generates an API key for it.
+      parameters:
+      - description: Agency information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/agency.CreateAgencyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/agency.CreateAgencyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Create a new agency
+      tags:
+      - Agencies
+securityDefinitions:
+  AgencyAPIKey:
+    in: header
+    name: X-API-Key
+    type: apiKey
+  AirlineAPIKey:
+    in: header
+    name: X-API-Key
+    type: apiKey
+swagger: "2.0"
