@@ -6,6 +6,10 @@ import (
 	"firefly-airline/internal/config"
 	"firefly-airline/internal/domains/agency"
 	"firefly-airline/internal/domains/airplane"
+	"firefly-airline/internal/domains/airport"
+	"firefly-airline/internal/domains/city"
+	"firefly-airline/internal/domains/country"
+	"firefly-airline/internal/domains/province"
 	"firefly-airline/internal/infrastructure/database"
 	"fmt"
 	"log"
@@ -67,6 +71,26 @@ func main() {
 	airplaneService := airplane.NewService(airplaneRepository)
 	airplaneHandler := airplane.NewHandler(airplaneService)
 
+	countryRepository := database.NewCountryRepository(db)
+	countryService := country.NewService(countryRepository)
+	countryHandler := country.NewHandler(countryService)
+	countryPublicHandler := country.NewPublicHandler(countryService)
+
+	provinceRepository := database.NewProvinceRepository(db)
+	provinceService := province.NewService(provinceRepository, countryRepository)
+	provinceHandler := province.NewHandler(provinceService)
+	provincePublicHandler := province.NewPublicHandler(provinceService)
+
+	cityRepository := database.NewCityRepository(db)
+	cityService := city.NewService(cityRepository, provinceRepository)
+	cityHandler := city.NewHandler(cityService)
+	cityPublicHandler := city.NewPublicHandler(cityService)
+
+	airportRepository := database.NewAirportRepository(db)
+	airportService := airport.NewService(airportRepository, cityRepository)
+	airportHandler := airport.NewHandler(airportService)
+	airportPublicHandler := airport.NewPublicHandler(airportService)
+
 	// API server
 	e := echo.New()
 
@@ -86,15 +110,46 @@ func main() {
 
 	internal := e.Group(
 		"/internal",
-		AirlineAPIKeyMiddleware(cfg.AirlineAPIKey),
+		api.AirlineAPIKeyMiddleware(cfg.AirlineAPIKey),
 	)
 
 	internal.POST("/agencies", agencyHandler.Create)
+
 	internal.POST("/airplanes", airplaneHandler.Create)
 	internal.GET("/airplanes", airplaneHandler.List)
 	internal.GET("/airplanes/:id", airplaneHandler.GetByID)
 	internal.PATCH("/airplanes/:id", airplaneHandler.Update)
 	internal.DELETE("/airplanes/:id", airplaneHandler.Delete)
+
+	internal.POST("/countries", countryHandler.Create)
+	internal.GET("/countries", countryHandler.List)
+	internal.GET("/countries/:id", countryHandler.GetByID)
+	internal.PATCH("/countries/:id", countryHandler.Update)
+
+	internal.POST("/provinces", provinceHandler.Create)
+	internal.GET("/provinces", provinceHandler.List)
+	internal.GET("/provinces/:id", provinceHandler.GetByID)
+	internal.PATCH("/provinces/:id", provinceHandler.Update)
+
+	internal.POST("/cities", cityHandler.Create)
+	internal.GET("/cities", cityHandler.List)
+	internal.GET("/cities/:id", cityHandler.GetByID)
+	internal.PATCH("/cities/:id", cityHandler.Update)
+
+	internal.POST("/airports", airportHandler.Create)
+	internal.GET("/airports", airportHandler.List)
+	internal.GET("/airports/:id", airportHandler.GetByID)
+	internal.PATCH("/airports/:id", airportHandler.Update)
+
+	public := e.Group(
+		"",
+		api.AgencyAPIKeyMiddleware(agencyService),
+	)
+
+	public.GET("/countries", countryPublicHandler.List)
+	public.GET("/provinces", provincePublicHandler.List)
+	public.GET("/cities", cityPublicHandler.List)
+	public.GET("/airports", airportPublicHandler.List)
 
 	// Register the Swagger JSON endpoint
 	e.GET("/swagger/doc.json", func(c *echo.Context) error {
@@ -111,22 +166,4 @@ func main() {
 		httpSwagger.URL("doc.json"),
 	)))
 	e.Start(":" + strconv.Itoa(cfg.Server.Port))
-}
-
-// TODO: move it to better place
-func AirlineAPIKeyMiddleware(expectedKey string) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) error {
-			apiKey := c.Request().Header.Get("X-API-Key")
-
-			if apiKey == "" || apiKey != expectedKey {
-				return echo.NewHTTPError(
-					http.StatusUnauthorized,
-					"invalid api key",
-				)
-			}
-
-			return next(c)
-		}
-	}
 }

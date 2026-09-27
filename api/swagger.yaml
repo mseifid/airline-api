@@ -1,11 +1,75 @@
 basePath: /
 definitions:
+  firefly-airline_internal_api.APIResponse-array_internal_domains_airport_AirportResponse:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/internal_domains_airport.AirportResponse'
+        type: array
+    type: object
+  firefly-airline_internal_api.APIResponse-array_internal_domains_city_CityResponse:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/internal_domains_city.CityResponse'
+        type: array
+    type: object
+  firefly-airline_internal_api.APIResponse-array_internal_domains_country_CountryResponse:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/internal_domains_country.CountryResponse'
+        type: array
+    type: object
+  firefly-airline_internal_api.APIResponse-array_internal_domains_province_ProvinceResponse:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/internal_domains_province.ProvinceResponse'
+        type: array
+    type: object
   firefly-airline_internal_api.APIResponse-internal_domains_agency_CreateAgencyResponse:
     properties:
       message:
         type: string
       result:
         $ref: '#/definitions/internal_domains_agency.CreateAgencyResponse'
+    type: object
+  firefly-airline_internal_api.APIResponse-internal_domains_airport_AirportResponse:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/internal_domains_airport.AirportResponse'
+    type: object
+  firefly-airline_internal_api.APIResponse-internal_domains_city_CityResponse:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/internal_domains_city.CityResponse'
+    type: object
+  firefly-airline_internal_api.APIResponse-internal_domains_country_CountryResponse:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/internal_domains_country.CountryResponse'
+    type: object
+  firefly-airline_internal_api.APIResponse-internal_domains_province_ProvinceResponse:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/internal_domains_province.ProvinceResponse'
     type: object
   internal_domains_agency.CreateAgencyRequest:
     properties:
@@ -55,6 +119,126 @@ definitions:
         example: Airbus A321
         type: string
     type: object
+  internal_domains_airport.AirportResponse:
+    properties:
+      cityId:
+        example: 1
+        type: integer
+      code:
+        example: IKA
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Imam Khomeini International Airport
+        type: string
+    type: object
+  internal_domains_airport.CreateAirportRequest:
+    properties:
+      cityId:
+        example: 1
+        type: integer
+      code:
+        example: IKA
+        type: string
+      name:
+        example: Imam Khomeini International Airport
+        type: string
+    type: object
+  internal_domains_airport.UpdateAirportRequest:
+    properties:
+      cityId:
+        example: 1
+        type: integer
+      code:
+        example: IKA
+        type: string
+      name:
+        example: Imam Khomeini International Airport
+        type: string
+    type: object
+  internal_domains_city.CityResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Tehran
+        type: string
+      provinceId:
+        example: 1
+        type: integer
+    type: object
+  internal_domains_city.CreateCityRequest:
+    properties:
+      name:
+        example: Tehran
+        type: string
+      provinceId:
+        example: 1
+        type: integer
+    type: object
+  internal_domains_city.UpdateCityRequest:
+    properties:
+      name:
+        example: Tehran
+        type: string
+      provinceId:
+        example: 1
+        type: integer
+    type: object
+  internal_domains_country.CountryResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Iran
+        type: string
+    type: object
+  internal_domains_country.CreateCountryRequest:
+    properties:
+      name:
+        example: Iran
+        type: string
+    type: object
+  internal_domains_country.UpdateCountryRequest:
+    properties:
+      name:
+        example: Iran
+        type: string
+    type: object
+  internal_domains_province.CreateProvinceRequest:
+    properties:
+      countryId:
+        example: 1
+        type: integer
+      name:
+        example: Tehran
+        type: string
+    type: object
+  internal_domains_province.ProvinceResponse:
+    properties:
+      countryId:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Tehran
+        type: string
+    type: object
+  internal_domains_province.UpdateProvinceRequest:
+    properties:
+      countryId:
+        example: 1
+        type: integer
+      name:
+        example: Tehran
+        type: string
+    type: object
 host: localhost:3000
 info:
   contact: {}
@@ -62,6 +246,109 @@ info:
   title: Firefly Airline API
   version: "1.0"
 paths:
+  /airports:
+    get:
+      description: Returns airports, optionally filtered by city.
+      parameters:
+      - description: Filter by city ID
+        in: query
+        name: city_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_airport_AirportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AgencyAPIKey: []
+      summary: List airports
+      tags:
+      - Airports
+  /cities:
+    get:
+      description: Returns cities, optionally filtered by province.
+      parameters:
+      - description: Filter by province ID
+        in: query
+        name: province_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_city_CityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AgencyAPIKey: []
+      summary: List cities
+      tags:
+      - Cities
+  /countries:
+    get:
+      description: Returns all countries.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_country_CountryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AgencyAPIKey: []
+      summary: List countries
+      tags:
+      - Countries
   /internal/agencies:
     post:
       consumes:
@@ -282,6 +569,731 @@ paths:
       summary: Update an airplane
       tags:
       - Airplanes
+  /internal/airports:
+    get:
+      description: Returns all airports, optionally filtered by city.
+      parameters:
+      - description: Filter by city ID
+        in: query
+        name: city_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_airport_AirportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: List airports
+      tags:
+      - Airports
+    post:
+      consumes:
+      - application/json
+      description: Creates a new airport.
+      parameters:
+      - description: Airport information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_airport.CreateAirportRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_airport_AirportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Create an airport
+      tags:
+      - Airports
+  /internal/airports/{id}:
+    get:
+      description: Gets an airport by ID.
+      parameters:
+      - description: Airport ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_airport_AirportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Get an airport
+      tags:
+      - Airports
+    patch:
+      consumes:
+      - application/json
+      description: Updates an airport.
+      parameters:
+      - description: Airport ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Airport information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_airport.UpdateAirportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_airport_AirportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Update an airport
+      tags:
+      - Airports
+  /internal/cities:
+    get:
+      description: Returns all cities, optionally filtered by province.
+      parameters:
+      - description: Filter by province ID
+        in: query
+        name: province_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_city_CityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: List cities
+      tags:
+      - Cities
+    post:
+      consumes:
+      - application/json
+      description: Creates a new city.
+      parameters:
+      - description: City information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_city.CreateCityRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_city_CityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Create a city
+      tags:
+      - Cities
+  /internal/cities/{id}:
+    get:
+      description: Gets a city by ID.
+      parameters:
+      - description: City ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_city_CityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Get a city
+      tags:
+      - Cities
+    patch:
+      consumes:
+      - application/json
+      description: Updates a city.
+      parameters:
+      - description: City ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: City information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_city.UpdateCityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_city_CityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Update a city
+      tags:
+      - Cities
+  /internal/countries:
+    get:
+      description: Returns all countries.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_country_CountryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: List countries
+      tags:
+      - Countries
+    post:
+      consumes:
+      - application/json
+      description: Creates a new country.
+      parameters:
+      - description: Country information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_country.CreateCountryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_country_CountryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Create a country
+      tags:
+      - Countries
+  /internal/countries/{id}:
+    get:
+      description: Gets a country by ID.
+      parameters:
+      - description: Country ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_country_CountryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Get a country
+      tags:
+      - Countries
+    patch:
+      consumes:
+      - application/json
+      description: Updates a country.
+      parameters:
+      - description: Country ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Country information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_country.UpdateCountryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_country_CountryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Update a country
+      tags:
+      - Countries
+  /internal/provinces:
+    get:
+      description: Returns all provinces, optionally filtered by country.
+      parameters:
+      - description: Filter by country ID
+        in: query
+        name: country_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_province_ProvinceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: List provinces
+      tags:
+      - Provinces
+    post:
+      consumes:
+      - application/json
+      description: Creates a new province.
+      parameters:
+      - description: Province information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_province.CreateProvinceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_province_ProvinceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Create a province
+      tags:
+      - Provinces
+  /internal/provinces/{id}:
+    get:
+      description: Gets a province by ID.
+      parameters:
+      - description: Province ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_province_ProvinceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Get a province
+      tags:
+      - Provinces
+    patch:
+      consumes:
+      - application/json
+      description: Updates a province.
+      parameters:
+      - description: Province ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Province information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_province.UpdateProvinceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_province_ProvinceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Update a province
+      tags:
+      - Provinces
+  /provinces:
+    get:
+      description: Returns provinces, optionally filtered by country.
+      parameters:
+      - description: Filter by country ID
+        in: query
+        name: country_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_province_ProvinceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AgencyAPIKey: []
+      summary: List provinces
+      tags:
+      - Provinces
 securityDefinitions:
   AgencyAPIKey:
     in: header

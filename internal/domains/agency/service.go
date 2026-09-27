@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 )
 
@@ -56,6 +57,26 @@ func (s *Service) Create(
 	}
 
 	return agency, rawKey, nil
+}
+
+func (s *Service) ValidateAPIKey(ctx context.Context, rawKey string) (int64, error) {
+	if rawKey == "" {
+		return 0, errors.New("api key is required")
+	}
+
+	hash := sha256.Sum256([]byte(rawKey))
+
+	keyHash := hex.EncodeToString(hash[:])
+
+	agencyID, err := s.repository.GetAgencyIDByAPIKeyHash(
+		ctx,
+		keyHash,
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	return agencyID, nil
 }
 
 func generateAPIKey() (string, error) {

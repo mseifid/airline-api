@@ -2,9 +2,11 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"firefly-airline/internal/domains/agency"
+
 	"gorm.io/gorm"
 )
 
@@ -48,4 +50,29 @@ func (r *AgencyRepository) CreateWithAPIKey(ctx context.Context, a *agency.Agenc
 
 		return nil
 	})
+}
+
+func (r *AgencyRepository) GetAgencyIDByAPIKeyHash(
+	ctx context.Context,
+	keyHash string,
+) (int64, error) {
+	var model APIKeyModel
+
+	err := r.db.WithContext(ctx).
+		Where(
+			"key_hash = ? AND revoked_at IS NULL",
+			keyHash,
+		).
+		First(&model).
+		Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, errors.New("invalid api key")
+		}
+
+		return 0, fmt.Errorf("validate api key: %w", err)
+	}
+
+	return model.AgencyID, nil
 }
