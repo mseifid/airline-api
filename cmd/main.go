@@ -9,6 +9,7 @@ import (
 	"firefly-airline/internal/domains/airport"
 	"firefly-airline/internal/domains/city"
 	"firefly-airline/internal/domains/country"
+	"firefly-airline/internal/domains/flight"
 	"firefly-airline/internal/domains/province"
 	"firefly-airline/internal/infrastructure/database"
 	"fmt"
@@ -91,6 +92,10 @@ func main() {
 	airportHandler := airport.NewHandler(airportService)
 	airportPublicHandler := airport.NewPublicHandler(airportService)
 
+	flightRepository := database.NewFlightRepository(db)
+	flightService := flight.NewService(flightRepository)
+	flightHandler := flight.NewHandler(flightService)
+
 	// API server
 	e := echo.New()
 
@@ -141,6 +146,10 @@ func main() {
 	internal.GET("/airports/:id", airportHandler.GetByID)
 	internal.PATCH("/airports/:id", airportHandler.Update)
 
+	internal.POST("/flights", flightHandler.Create)
+	internal.PATCH("/flights/:id", flightHandler.Update)
+	internal.GET("/flights", flightHandler.ListActive)
+
 	public := e.Group(
 		"",
 		api.AgencyAPIKeyMiddleware(agencyService),
@@ -150,6 +159,7 @@ func main() {
 	public.GET("/provinces", provincePublicHandler.List)
 	public.GET("/cities", cityPublicHandler.List)
 	public.GET("/airports", airportPublicHandler.List)
+	public.GET("/flights", flightHandler.Search)
 
 	// Register the Swagger JSON endpoint
 	e.GET("/swagger/doc.json", func(c *echo.Context) error {

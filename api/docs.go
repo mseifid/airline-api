@@ -179,6 +179,86 @@ const docTemplate = `{
                 }
             }
         },
+        "/flights": {
+            "get": {
+                "security": [
+                    {
+                        "AgencyAPIKey": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Flights"
+                ],
+                "summary": "Search flights",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Source city ID",
+                        "name": "source_city",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Destination city ID",
+                        "name": "destination_city",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date (YYYY-MM-DD)",
+                        "name": "departure_date",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date (YYYY-MM-DD)",
+                        "name": "arrival_date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_flight_FlightResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/internal/agencies": {
             "post": {
                 "security": [
@@ -1318,6 +1398,185 @@ const docTemplate = `{
                 }
             }
         },
+        "/internal/flights": {
+            "get": {
+                "security": [
+                    {
+                        "AirlineAPIKey": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Flights"
+                ],
+                "summary": "List active flights",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_flight_FlightResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "AirlineAPIKey": []
+                    }
+                ],
+                "description": "Creates a new flight.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Flights"
+                ],
+                "summary": "Create a flight",
+                "parameters": [
+                    {
+                        "description": "Flight information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_domains_flight.CreateFlightRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_flight_FlightResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/internal/flights/{id}": {
+            "patch": {
+                "security": [
+                    {
+                        "AirlineAPIKey": []
+                    }
+                ],
+                "description": "Updates an existing flight.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Flights"
+                ],
+                "summary": "Update a flight",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Flight ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Flight information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_domains_flight.UpdateFlightRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_flight_FlightResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/internal/provinces": {
             "get": {
                 "security": [
@@ -1696,6 +1955,20 @@ const docTemplate = `{
                 }
             }
         },
+        "firefly-airline_internal_api.APIResponse-array_internal_domains_flight_FlightResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_domains_flight.FlightResponse"
+                    }
+                }
+            }
+        },
         "firefly-airline_internal_api.APIResponse-array_internal_domains_province_ProvinceResponse": {
             "type": "object",
             "properties": {
@@ -1751,6 +2024,17 @@ const docTemplate = `{
                 },
                 "result": {
                     "$ref": "#/definitions/internal_domains_country.CountryResponse"
+                }
+            }
+        },
+        "firefly-airline_internal_api.APIResponse-internal_domains_flight_FlightResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/internal_domains_flight.FlightResponse"
                 }
             }
         },
@@ -1962,6 +2246,111 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "Iran"
+                }
+            }
+        },
+        "internal_domains_flight.CreateFlightRequest": {
+            "type": "object",
+            "properties": {
+                "airplaneId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "arrivalAirportId": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "arrivalAt": {
+                    "type": "string",
+                    "example": "2026-10-15T12:00:00Z"
+                },
+                "departureAirportId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "departureAt": {
+                    "type": "string",
+                    "example": "2026-10-15T10:00:00Z"
+                },
+                "price": {
+                    "type": "integer",
+                    "example": 5000000
+                }
+            }
+        },
+        "internal_domains_flight.FlightResponse": {
+            "type": "object",
+            "properties": {
+                "airplaneId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "arrivalAirportId": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "arrivalAt": {
+                    "type": "string"
+                },
+                "availableSeats": {
+                    "type": "integer",
+                    "example": 180
+                },
+                "capacity": {
+                    "type": "integer",
+                    "example": 180
+                },
+                "departureAirportId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "departureAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "price": {
+                    "type": "integer",
+                    "example": 5000000
+                },
+                "status": {
+                    "type": "string",
+                    "example": "active"
+                }
+            }
+        },
+        "internal_domains_flight.UpdateFlightRequest": {
+            "type": "object",
+            "properties": {
+                "airplaneId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "arrivalAirportId": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "arrivalAt": {
+                    "type": "string",
+                    "example": "2026-10-15T12:00:00Z"
+                },
+                "departureAirportId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "departureAt": {
+                    "type": "string",
+                    "example": "2026-10-15T10:00:00Z"
+                },
+                "price": {
+                    "type": "integer",
+                    "example": 5000000
+                },
+                "status": {
+                    "type": "string",
+                    "example": "active"
                 }
             }
         },

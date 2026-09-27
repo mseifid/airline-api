@@ -27,6 +27,15 @@ definitions:
           $ref: '#/definitions/internal_domains_country.CountryResponse'
         type: array
     type: object
+  firefly-airline_internal_api.APIResponse-array_internal_domains_flight_FlightResponse:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/internal_domains_flight.FlightResponse'
+        type: array
+    type: object
   firefly-airline_internal_api.APIResponse-array_internal_domains_province_ProvinceResponse:
     properties:
       message:
@@ -63,6 +72,13 @@ definitions:
         type: string
       result:
         $ref: '#/definitions/internal_domains_country.CountryResponse'
+    type: object
+  firefly-airline_internal_api.APIResponse-internal_domains_flight_FlightResponse:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/internal_domains_flight.FlightResponse'
     type: object
   firefly-airline_internal_api.APIResponse-internal_domains_province_ProvinceResponse:
     properties:
@@ -209,6 +225,82 @@ definitions:
         example: Iran
         type: string
     type: object
+  internal_domains_flight.CreateFlightRequest:
+    properties:
+      airplaneId:
+        example: 1
+        type: integer
+      arrivalAirportId:
+        example: 2
+        type: integer
+      arrivalAt:
+        example: "2026-10-15T12:00:00Z"
+        type: string
+      departureAirportId:
+        example: 1
+        type: integer
+      departureAt:
+        example: "2026-10-15T10:00:00Z"
+        type: string
+      price:
+        example: 5000000
+        type: integer
+    type: object
+  internal_domains_flight.FlightResponse:
+    properties:
+      airplaneId:
+        example: 1
+        type: integer
+      arrivalAirportId:
+        example: 2
+        type: integer
+      arrivalAt:
+        type: string
+      availableSeats:
+        example: 180
+        type: integer
+      capacity:
+        example: 180
+        type: integer
+      departureAirportId:
+        example: 1
+        type: integer
+      departureAt:
+        type: string
+      id:
+        example: 1
+        type: integer
+      price:
+        example: 5000000
+        type: integer
+      status:
+        example: active
+        type: string
+    type: object
+  internal_domains_flight.UpdateFlightRequest:
+    properties:
+      airplaneId:
+        example: 1
+        type: integer
+      arrivalAirportId:
+        example: 2
+        type: integer
+      arrivalAt:
+        example: "2026-10-15T12:00:00Z"
+        type: string
+      departureAirportId:
+        example: 1
+        type: integer
+      departureAt:
+        example: "2026-10-15T10:00:00Z"
+        type: string
+      price:
+        example: 5000000
+        type: integer
+      status:
+        example: active
+        type: string
+    type: object
   internal_domains_province.CreateProvinceRequest:
     properties:
       countryId:
@@ -349,6 +441,58 @@ paths:
       summary: List countries
       tags:
       - Countries
+  /flights:
+    get:
+      parameters:
+      - description: Source city ID
+        in: query
+        name: source_city
+        required: true
+        type: integer
+      - description: Destination city ID
+        in: query
+        name: destination_city
+        required: true
+        type: integer
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: departure_date
+        required: true
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: arrival_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_flight_FlightResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AgencyAPIKey: []
+      summary: Search flights
+      tags:
+      - Flights
   /internal/agencies:
     post:
       consumes:
@@ -1080,6 +1224,120 @@ paths:
       summary: Update a country
       tags:
       - Countries
+  /internal/flights:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_flight_FlightResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: List active flights
+      tags:
+      - Flights
+    post:
+      consumes:
+      - application/json
+      description: Creates a new flight.
+      parameters:
+      - description: Flight information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_flight.CreateFlightRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_flight_FlightResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Create a flight
+      tags:
+      - Flights
+  /internal/flights/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Updates an existing flight.
+      parameters:
+      - description: Flight ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Flight information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_flight.UpdateFlightRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_flight_FlightResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Update a flight
+      tags:
+      - Flights
   /internal/provinces:
     get:
       description: Returns all provinces, optionally filtered by country.

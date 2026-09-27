@@ -87,3 +87,22 @@ type AirportModel struct {
 func (AirportModel) TableName() string {
 	return "airport"
 }
+
+type FlightModel struct {
+	ID                 int64     `gorm:"column:id;primaryKey"`
+	AirplaneID         int64     `gorm:"column:airplane_id"`
+	DepartureAirportID int64     `gorm:"column:departure_airport_id"`
+	ArrivalAirportID   int64     `gorm:"column:arrival_airport_id"`
+	DepartureAt        time.Time `gorm:"column:departure_at"`
+	ArrivalAt          time.Time `gorm:"column:arrival_at"`
+	Price              int64     `gorm:"column:price"`
+	Capacity           int       `gorm:"column:capacity"`
+	AvailableSeats     int       `gorm:"column:available_seats"`
+	Status             string    `gorm:"column:status"`
+	CreatedAt          time.Time `gorm:"column:created_at"`
+	UpdatedAt          time.Time `gorm:"column:updated_at"`
+}
+
+func (FlightModel) TableName() string {
+	return "flight"
+}
