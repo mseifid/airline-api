@@ -22,6 +22,7 @@ A backend service built with **Go**, **Echo v5**, **GORM**, and **PostgreSQL** t
 - A seeder could make the first-time-run easier, but because of time shortage I ignored it
 - A more sophisticated logging scenario using `slog` could be implemented.
 - API Key management would be more production-grade by implementing revoke scenario.
+- Adding specific seat numbers to ticket
 
 ## How to run
 1. Clone the repository and install the Go dependencies: `go mod download`
