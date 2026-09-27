@@ -11,3 +11,11 @@ type CreateAgencyResponse struct {
 	WalletBalance int64  `json:"walletBalance"`
 	APIKey        string `json:"apiKey"`
 }
+
+type AddBalanceRequest struct {
+	Amount int64 `json:"amount" example:"10000000"`
+}
+
+type AddBalanceResponse struct {
+	WalletBalance int64 `json:"walletBalance"`
+}

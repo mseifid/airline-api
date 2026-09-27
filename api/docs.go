@@ -2191,6 +2191,71 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/wallet/deposit": {
+            "post": {
+                "security": [
+                    {
+                        "AgencyAPIKey": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Agencies"
+                ],
+                "summary": "Add balance to agency wallet",
+                "parameters": [
+                    {
+                        "description": "Deposit amount",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_domains_agency.AddBalanceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_agency_AddBalanceResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2278,6 +2343,17 @@ const docTemplate = `{
                 }
             }
         },
+        "firefly-airline_internal_api.APIResponse-internal_domains_agency_AddBalanceResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/internal_domains_agency.AddBalanceResponse"
+                }
+            }
+        },
         "firefly-airline_internal_api.APIResponse-internal_domains_agency_CreateAgencyResponse": {
             "type": "object",
             "properties": {
@@ -2352,6 +2428,23 @@ const docTemplate = `{
                 },
                 "result": {
                     "$ref": "#/definitions/internal_domains_ticket.TicketResponse"
+                }
+            }
+        },
+        "internal_domains_agency.AddBalanceRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer",
+                    "example": 10000000
+                }
+            }
+        },
+        "internal_domains_agency.AddBalanceResponse": {
+            "type": "object",
+            "properties": {
+                "walletBalance": {
+                    "type": "integer"
                 }
             }
         },

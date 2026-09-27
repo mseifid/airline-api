@@ -201,6 +201,8 @@ func main() {
 	public.POST("/tickets/:id/cancel", ticketHandler.Cancel)
 	public.GET("/tickets/:id", ticketHandler.GetByID)
 
+	public.POST("/wallet/deposit", agencyHandler.AddBalance)
+
 	// Register the Swagger JSON endpoint
 	e.GET("/swagger/doc.json", func(c *echo.Context) error {
 		doc, err := swag.ReadDoc()

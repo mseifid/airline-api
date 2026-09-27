@@ -90,7 +90,7 @@ func (r *TicketRepository) Purchase(
 		// Calculate the price from the locked flight
 		totalPrice := flightModel.Price * int64(seatCount)
 
-		// Check the locked wallet
+		// Checkk the locked wallet
 		if agencyModel.WalletBalance < totalPrice {
 			return ticket.ErrInsufficientBalance
 		}

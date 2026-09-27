@@ -76,3 +76,32 @@ func (r *AgencyRepository) GetAgencyIDByAPIKeyHash(
 
 	return model.AgencyID, nil
 }
+
+func (r *AgencyRepository) AddBalance(ctx context.Context,agencyID int64,amount int64) (int64, error) {
+	var agency AgencyModel
+
+	result := r.db.WithContext(ctx).
+		Model(&AgencyModel{}).
+		Where("id = ?", agencyID).
+		UpdateColumn(
+			"wallet_balance",
+			gorm.Expr("wallet_balance + ?", amount),
+		)
+
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return 0, errors.New("agency not found")
+	}
+
+	if err := r.db.WithContext(ctx).
+		Select("wallet_balance").
+		First(&agency, agencyID).
+		Error; err != nil {
+		return 0, err
+	}
+
+	return agency.WalletBalance, nil
+}

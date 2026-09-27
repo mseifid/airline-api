@@ -54,6 +54,13 @@ definitions:
           $ref: '#/definitions/internal_domains_ticket.TicketResponse'
         type: array
     type: object
+  firefly-airline_internal_api.APIResponse-internal_domains_agency_AddBalanceResponse:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/internal_domains_agency.AddBalanceResponse'
+    type: object
   firefly-airline_internal_api.APIResponse-internal_domains_agency_CreateAgencyResponse:
     properties:
       message:
@@ -102,6 +109,17 @@ definitions:
         type: string
       result:
         $ref: '#/definitions/internal_domains_ticket.TicketResponse'
+    type: object
+  internal_domains_agency.AddBalanceRequest:
+    properties:
+      amount:
+        example: 10000000
+        type: integer
+    type: object
+  internal_domains_agency.AddBalanceResponse:
+    properties:
+      walletBalance:
+        type: integer
     type: object
   internal_domains_agency.CreateAgencyRequest:
     properties:
@@ -1811,6 +1829,47 @@ paths:
       summary: Cancel ticket
       tags:
       - Tickets
+  /wallet/deposit:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Deposit amount
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_agency.AddBalanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_agency_AddBalanceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AgencyAPIKey: []
+      summary: Add balance to agency wallet
+      tags:
+      - Agencies
 securityDefinitions:
   AgencyAPIKey:
     in: header

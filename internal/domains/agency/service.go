@@ -79,6 +79,18 @@ func (s *Service) ValidateAPIKey(ctx context.Context, rawKey string) (int64, err
 	return agencyID, nil
 }
 
+func (s *Service) AddBalance(ctx context.Context,agencyID int64,amount int64) (int64, error) {
+	if agencyID <= 0 {
+		return 0, errors.New("invalid agency")
+	}
+
+	if amount <= 0 {
+		return 0, ErrInvalidDepositAmount
+	}
+
+	return s.repository.AddBalance(ctx, agencyID, amount)
+}
+
 func generateAPIKey() (string, error) {
 	b := make([]byte, 32)
 

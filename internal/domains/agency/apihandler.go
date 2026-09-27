@@ -70,3 +70,51 @@ func (h *Handler) Create(c *echo.Context) error {
 		APIKey:        apiKey,
 	}))
 }
+
+// Add balance
+//
+// @Summary Add balance to agency wallet
+// @Tags Agencies
+// @Security AgencyAPIKey
+// @Accept json
+// @Produce json
+// @Param request body AddBalanceRequest true "Deposit amount"
+// @Success 200 {object} api.APIResponse[AddBalanceResponse]
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /wallet/deposit [post]
+func (h *Handler) AddBalance(c *echo.Context) error {
+	var req AddBalanceRequest
+
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			"invalid request body",
+		)
+	}
+
+	agencyID, ok := c.Get("agency_id").(int64)
+	if !ok || agencyID <= 0 {
+		return echo.NewHTTPError(
+			http.StatusUnauthorized,
+			"invalid agency context",
+		)
+	}
+
+	balance, err := h.service.AddBalance(
+		c.Request().Context(),
+		agencyID,
+		req.Amount,
+	)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(
+		http.StatusOK,
+		api.Success(AddBalanceResponse{
+			WalletBalance: balance,
+		}),
+	)
+}
