@@ -11,6 +11,7 @@ import (
 	"firefly-airline/internal/domains/country"
 	"firefly-airline/internal/domains/flight"
 	"firefly-airline/internal/domains/province"
+	"firefly-airline/internal/domains/ticket"
 	"firefly-airline/internal/infrastructure/database"
 	"fmt"
 	"log"
@@ -96,18 +97,52 @@ func main() {
 	flightService := flight.NewService(flightRepository)
 	flightHandler := flight.NewHandler(flightService)
 
+	ticketRepository := database.NewTicketRepository(db)
+	ticketService := ticket.NewService(ticketRepository)
+	ticketHandler := ticket.NewHandler(ticketService)
+
 	// API server
 	e := echo.New()
 
 	// Global error handler
 	e.HTTPErrorHandler = func(c *echo.Context, err error) {
+		e.Logger.Error(err.Error())
+
 		code := http.StatusInternalServerError
 		message := "internal server error"
 
-		var httpErr *echo.HTTPError
-		if errors.As(err, &httpErr) {
-			code = httpErr.Code
-			message = httpErr.Message
+		switch {
+		case errors.Is(err, ticket.ErrInsufficientBalance):
+			code = http.StatusConflict
+			message = "insufficient wallet balance"
+
+		case errors.Is(err, ticket.ErrNotEnoughSeats):
+			code = http.StatusConflict
+			message = "not enough available seats"
+
+		case errors.Is(err, ticket.ErrTicketAlreadyCancelled):
+			code = http.StatusConflict
+			message = "ticket is already cancelled"
+
+		case errors.Is(err, ticket.ErrFlightAlreadyDeparted):
+			code = http.StatusConflict
+			message = "flight has already departed"
+
+		case errors.Is(err, ticket.ErrTicketNotFound):
+			code = http.StatusNotFound
+			message = "ticket not found"
+
+		case errors.Is(err, ticket.ErrFlightNotFound):
+			code = http.StatusNotFound
+			message = "flight not found"
+
+		default:
+			var httpErr *echo.HTTPError
+
+			if errors.As(err, &httpErr) {
+				code = httpErr.Code
+				message = httpErr.Message
+			}
 		}
 
 		_ = c.JSON(code, api.Error(message))
@@ -160,6 +195,11 @@ func main() {
 	public.GET("/cities", cityPublicHandler.List)
 	public.GET("/airports", airportPublicHandler.List)
 	public.GET("/flights", flightHandler.Search)
+
+	public.POST("/tickets", ticketHandler.Purchase)
+	public.GET("/flights/:flight_id/tickets", ticketHandler.ListByFlight)
+	public.POST("/tickets/:id/cancel", ticketHandler.Cancel)
+	public.GET("/tickets/:id", ticketHandler.GetByID)
 
 	// Register the Swagger JSON endpoint
 	e.GET("/swagger/doc.json", func(c *echo.Context) error {

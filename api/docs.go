@@ -259,6 +259,66 @@ const docTemplate = `{
                 }
             }
         },
+        "/flights/{flight_id}/tickets": {
+            "get": {
+                "security": [
+                    {
+                        "AgencyAPIKey": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "List agency tickets for a flight",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Flight ID",
+                        "name": "flight_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_ticket_TicketResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/internal/agencies": {
             "post": {
                 "security": [
@@ -1910,6 +1970,227 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/tickets": {
+            "post": {
+                "security": [
+                    {
+                        "AgencyAPIKey": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Purchase ticket",
+                "parameters": [
+                    {
+                        "description": "Ticket purchase data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_domains_ticket.PurchaseTicketRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_ticket_TicketResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tickets/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "AgencyAPIKey": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Get ticket",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Ticket ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_ticket_TicketResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tickets/{id}/cancel": {
+            "post": {
+                "security": [
+                    {
+                        "AgencyAPIKey": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Cancel ticket",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Ticket ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_ticket_TicketResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1983,6 +2264,20 @@ const docTemplate = `{
                 }
             }
         },
+        "firefly-airline_internal_api.APIResponse-array_internal_domains_ticket_TicketResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_domains_ticket.TicketResponse"
+                    }
+                }
+            }
+        },
         "firefly-airline_internal_api.APIResponse-internal_domains_agency_CreateAgencyResponse": {
             "type": "object",
             "properties": {
@@ -2046,6 +2341,17 @@ const docTemplate = `{
                 },
                 "result": {
                     "$ref": "#/definitions/internal_domains_province.ProvinceResponse"
+                }
+            }
+        },
+        "firefly-airline_internal_api.APIResponse-internal_domains_ticket_TicketResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/internal_domains_ticket.TicketResponse"
                 }
             }
         },
@@ -2394,6 +2700,102 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "Tehran"
+                }
+            }
+        },
+        "internal_domains_ticket.PassengerRequest": {
+            "type": "object",
+            "properties": {
+                "mobile": {
+                    "type": "string",
+                    "example": "+989121234567"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "nationalCode": {
+                    "type": "string",
+                    "example": "0012345678"
+                }
+            }
+        },
+        "internal_domains_ticket.PassengerResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "mobile": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nationalCode": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_domains_ticket.PurchaseTicketRequest": {
+            "type": "object",
+            "properties": {
+                "flightId": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "passengers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_domains_ticket.PassengerRequest"
+                    }
+                }
+            }
+        },
+        "internal_domains_ticket.TicketResponse": {
+            "type": "object",
+            "properties": {
+                "agencyId": {
+                    "type": "integer"
+                },
+                "airplaneType": {
+                    "type": "string"
+                },
+                "arrivalAt": {
+                    "type": "string"
+                },
+                "cancelledAt": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "departureAt": {
+                    "type": "string"
+                },
+                "flightId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "passengers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_domains_ticket.PassengerResponse"
+                    }
+                },
+                "seatCount": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "totalPrice": {
+                    "type": "integer"
+                },
+                "unitPrice": {
+                    "type": "integer"
                 }
             }
         }

@@ -106,3 +106,32 @@ type FlightModel struct {
 func (FlightModel) TableName() string {
 	return "flight"
 }
+
+type TicketModel struct {
+	ID          int64      `gorm:"column:id;primaryKey"`
+	AgencyID    int64      `gorm:"column:agency_id"`
+	FlightID    int64      `gorm:"column:flight_id"`
+	SeatCount   int        `gorm:"column:seat_count"`
+	UnitPrice   int64      `gorm:"column:unit_price"`
+	TotalPrice  int64      `gorm:"column:total_price"`
+	Status      string     `gorm:"column:status"`
+	CreatedAt   time.Time  `gorm:"column:created_at"`
+	CancelledAt *time.Time `gorm:"column:cancelled_at"`
+}
+
+func (TicketModel) TableName() string {
+	return "ticket"
+}
+
+type PassengerModel struct {
+	ID           int64     `gorm:"column:id;primaryKey"`
+	TicketID     int64     `gorm:"column:ticket_id"`
+	Name         string    `gorm:"column:name"`
+	Mobile       string    `gorm:"column:mobile"`
+	NationalCode string    `gorm:"column:national_code"`
+	CreatedAt    time.Time `gorm:"column:created_at"`
+}
+
+func (PassengerModel) TableName() string {
+	return "passenger"
+}

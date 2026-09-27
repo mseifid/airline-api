@@ -45,6 +45,15 @@ definitions:
           $ref: '#/definitions/internal_domains_province.ProvinceResponse'
         type: array
     type: object
+  firefly-airline_internal_api.APIResponse-array_internal_domains_ticket_TicketResponse:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/internal_domains_ticket.TicketResponse'
+        type: array
+    type: object
   firefly-airline_internal_api.APIResponse-internal_domains_agency_CreateAgencyResponse:
     properties:
       message:
@@ -86,6 +95,13 @@ definitions:
         type: string
       result:
         $ref: '#/definitions/internal_domains_province.ProvinceResponse'
+    type: object
+  firefly-airline_internal_api.APIResponse-internal_domains_ticket_TicketResponse:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/internal_domains_ticket.TicketResponse'
     type: object
   internal_domains_agency.CreateAgencyRequest:
     properties:
@@ -331,6 +347,70 @@ definitions:
         example: Tehran
         type: string
     type: object
+  internal_domains_ticket.PassengerRequest:
+    properties:
+      mobile:
+        example: "+989121234567"
+        type: string
+      name:
+        example: John Doe
+        type: string
+      nationalCode:
+        example: "0012345678"
+        type: string
+    type: object
+  internal_domains_ticket.PassengerResponse:
+    properties:
+      id:
+        type: integer
+      mobile:
+        type: string
+      name:
+        type: string
+      nationalCode:
+        type: string
+    type: object
+  internal_domains_ticket.PurchaseTicketRequest:
+    properties:
+      flightId:
+        example: 10
+        type: integer
+      passengers:
+        items:
+          $ref: '#/definitions/internal_domains_ticket.PassengerRequest'
+        type: array
+    type: object
+  internal_domains_ticket.TicketResponse:
+    properties:
+      agencyId:
+        type: integer
+      airplaneType:
+        type: string
+      arrivalAt:
+        type: string
+      cancelledAt:
+        type: string
+      createdAt:
+        type: string
+      departureAt:
+        type: string
+      flightId:
+        type: integer
+      id:
+        type: integer
+      passengers:
+        items:
+          $ref: '#/definitions/internal_domains_ticket.PassengerResponse'
+        type: array
+      seatCount:
+        type: integer
+      status:
+        type: string
+      totalPrice:
+        type: integer
+      unitPrice:
+        type: integer
+    type: object
 host: localhost:3000
 info:
   contact: {}
@@ -493,6 +573,44 @@ paths:
       summary: Search flights
       tags:
       - Flights
+  /flights/{flight_id}/tickets:
+    get:
+      parameters:
+      - description: Flight ID
+        in: path
+        name: flight_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-array_internal_domains_ticket_TicketResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AgencyAPIKey: []
+      summary: List agency tickets for a flight
+      tags:
+      - Tickets
   /internal/agencies:
     post:
       consumes:
@@ -1552,6 +1670,147 @@ paths:
       summary: List provinces
       tags:
       - Provinces
+  /tickets:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Ticket purchase data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_ticket.PurchaseTicketRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_ticket_TicketResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AgencyAPIKey: []
+      summary: Purchase ticket
+      tags:
+      - Tickets
+  /tickets/{id}:
+    get:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_ticket_TicketResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AgencyAPIKey: []
+      summary: Get ticket
+      tags:
+      - Tickets
+  /tickets/{id}/cancel:
+    post:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_ticket_TicketResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AgencyAPIKey: []
+      summary: Cancel ticket
+      tags:
+      - Tickets
 securityDefinitions:
   AgencyAPIKey:
     in: header
