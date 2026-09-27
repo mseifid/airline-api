@@ -27,3 +27,15 @@ type APIKeyModel struct {
 func (APIKeyModel) TableName() string {
 	return "api_key"
 }
+
+type AirplaneModel struct {
+	ID        int16     `gorm:"column:id;primaryKey"`
+	Type      string    `gorm:"column:type"`
+	Capacity  int16     `gorm:"column:capacity"`
+	CreatedAt time.Time `gorm:"column:created_at"`
+	UpdatedAt time.Time `gorm:"column:updated_at"`
+}
+
+func (AirplaneModel) TableName() string {
+	return "airplane"
+}

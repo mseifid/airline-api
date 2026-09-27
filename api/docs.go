@@ -41,7 +41,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/agency.CreateAgencyRequest"
+                            "$ref": "#/definitions/internal_domains_agency.CreateAgencyRequest"
                         }
                     }
                 ],
@@ -49,7 +49,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/agency.CreateAgencyResponse"
+                            "$ref": "#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_agency_CreateAgencyResponse"
                         }
                     },
                     "400": {
@@ -81,10 +81,298 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/internal/airplanes": {
+            "get": {
+                "security": [
+                    {
+                        "AirlineAPIKey": []
+                    }
+                ],
+                "description": "Returns all airplanes.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Airplanes"
+                ],
+                "summary": "List airplanes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_domains_airplane.AirplaneResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "AirlineAPIKey": []
+                    }
+                ],
+                "description": "Creates a new airplane.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Airplanes"
+                ],
+                "summary": "Create an airplane",
+                "parameters": [
+                    {
+                        "description": "Airplane information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_domains_airplane.CreateAirplaneRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/internal_domains_airplane.AirplaneResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/internal/airplanes/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "AirlineAPIKey": []
+                    }
+                ],
+                "description": "Gets an airplane by ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Airplanes"
+                ],
+                "summary": "Get an airplane",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Airplane ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_domains_airplane.AirplaneResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "AirlineAPIKey": []
+                    }
+                ],
+                "description": "Deletes an airplane. Deletion fails if the airplane is referenced by a flight.",
+                "tags": [
+                    "Airplanes"
+                ],
+                "summary": "Delete an airplane",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Airplane ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "AirlineAPIKey": []
+                    }
+                ],
+                "description": "Updates an airplane.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Airplanes"
+                ],
+                "summary": "Update an airplane",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Airplane ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Airplane information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_domains_airplane.UpdateAirplaneRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_domains_airplane.AirplaneResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "agency.CreateAgencyRequest": {
+        "firefly-airline_internal_api.APIResponse-internal_domains_agency_CreateAgencyResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/internal_domains_agency.CreateAgencyResponse"
+                }
+            }
+        },
+        "internal_domains_agency.CreateAgencyRequest": {
             "type": "object",
             "properties": {
                 "name": {
@@ -95,7 +383,7 @@ const docTemplate = `{
                 }
             }
         },
-        "agency.CreateAgencyResponse": {
+        "internal_domains_agency.CreateAgencyResponse": {
             "type": "object",
             "properties": {
                 "apiKey": {
@@ -109,6 +397,49 @@ const docTemplate = `{
                 },
                 "walletBalance": {
                     "type": "integer"
+                }
+            }
+        },
+        "internal_domains_airplane.AirplaneResponse": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "type": "integer",
+                    "example": 180
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Airbus A320"
+                }
+            }
+        },
+        "internal_domains_airplane.CreateAirplaneRequest": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "type": "integer",
+                    "example": 180
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Airbus A320"
+                }
+            }
+        },
+        "internal_domains_airplane.UpdateAirplaneRequest": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "type": "integer",
+                    "example": 220
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Airbus A321"
                 }
             }
         }
@@ -130,7 +461,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "localhost:3000",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Firefly Airline API",

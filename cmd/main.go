@@ -1,8 +1,11 @@
 package main
 
 import (
+	"errors"
+	"firefly-airline/internal/api"
 	"firefly-airline/internal/config"
 	"firefly-airline/internal/domains/agency"
+	"firefly-airline/internal/domains/airplane"
 	"firefly-airline/internal/infrastructure/database"
 	"fmt"
 	"log"
@@ -14,7 +17,6 @@ import (
 	"github.com/labstack/echo/v5"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"github.com/swaggo/swag/v2"
-	
 )
 
 // @title           Firefly Airline API
@@ -56,12 +58,31 @@ func main() {
 	}
 	fmt.Println("migrations applied successfully")
 
-	// API server
-	e := echo.New()
-
+	// Wiring
 	agencyRepository := database.NewAgencyRepository(db)
 	agencyService := agency.NewService(agencyRepository)
 	agencyHandler := agency.NewHandler(agencyService)
+
+	airplaneRepository := database.NewAirplaneRepository(db)
+	airplaneService := airplane.NewService(airplaneRepository)
+	airplaneHandler := airplane.NewHandler(airplaneService)
+
+	// API server
+	e := echo.New()
+
+	// Global error handler
+	e.HTTPErrorHandler = func(c *echo.Context, err error) {
+		code := http.StatusInternalServerError
+		message := "internal server error"
+
+		var httpErr *echo.HTTPError
+		if errors.As(err, &httpErr) {
+			code = httpErr.Code
+			message = httpErr.Message
+		}
+
+		_ = c.JSON(code, api.Error(message))
+	}
 
 	internal := e.Group(
 		"/internal",
@@ -69,6 +90,11 @@ func main() {
 	)
 
 	internal.POST("/agencies", agencyHandler.Create)
+	internal.POST("/airplanes", airplaneHandler.Create)
+	internal.GET("/airplanes", airplaneHandler.List)
+	internal.GET("/airplanes/:id", airplaneHandler.GetByID)
+	internal.PATCH("/airplanes/:id", airplaneHandler.Update)
+	internal.DELETE("/airplanes/:id", airplaneHandler.Delete)
 
 	// Register the Swagger JSON endpoint
 	e.GET("/swagger/doc.json", func(c *echo.Context) error {

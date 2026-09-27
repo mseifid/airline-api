@@ -1,6 +1,7 @@
 package agency
 
 import (
+	"firefly-airline/internal/api"
 	"net/http"
 	"strings"
 
@@ -24,7 +25,7 @@ func NewHandler(service *Service) *Handler {
 //	@Produce		json
 //	@Security		AirlineAPIKey
 //	@Param			request	body		CreateAgencyRequest	true	"Agency information"
-//	@Success		201		{object}	CreateAgencyResponse
+//	@Success		201		{object}	api.APIResponse[CreateAgencyResponse]
 //	@Failure		400		{object}	map[string]string
 //	@Failure		401		{object}	map[string]string
 //	@Failure		500		{object}	map[string]string
@@ -62,10 +63,10 @@ func (h *Handler) Create(c *echo.Context) error {
 		)
 	}
 
-	return c.JSON(http.StatusCreated, CreateAgencyResponse{
+	return c.JSON(http.StatusCreated, api.Success(CreateAgencyResponse{
 		ID:            agency.ID,
 		Name:          agency.Name,
 		WalletBalance: agency.WalletBalance,
 		APIKey:        apiKey,
-	})
+	}))
 }

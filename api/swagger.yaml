@@ -1,13 +1,20 @@
 basePath: /
 definitions:
-  agency.CreateAgencyRequest:
+  firefly-airline_internal_api.APIResponse-internal_domains_agency_CreateAgencyResponse:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/internal_domains_agency.CreateAgencyResponse'
+    type: object
+  internal_domains_agency.CreateAgencyRequest:
     properties:
       name:
         type: string
       walletBalance:
         type: integer
     type: object
-  agency.CreateAgencyResponse:
+  internal_domains_agency.CreateAgencyResponse:
     properties:
       apiKey:
         type: string
@@ -18,7 +25,37 @@ definitions:
       walletBalance:
         type: integer
     type: object
-host: localhost:8080
+  internal_domains_airplane.AirplaneResponse:
+    properties:
+      capacity:
+        example: 180
+        type: integer
+      id:
+        example: 1
+        type: integer
+      type:
+        example: Airbus A320
+        type: string
+    type: object
+  internal_domains_airplane.CreateAirplaneRequest:
+    properties:
+      capacity:
+        example: 180
+        type: integer
+      type:
+        example: Airbus A320
+        type: string
+    type: object
+  internal_domains_airplane.UpdateAirplaneRequest:
+    properties:
+      capacity:
+        example: 220
+        type: integer
+      type:
+        example: Airbus A321
+        type: string
+    type: object
+host: localhost:3000
 info:
   contact: {}
   description: API documentation for Firefly Airline
@@ -36,14 +73,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/agency.CreateAgencyRequest'
+          $ref: '#/definitions/internal_domains_agency.CreateAgencyRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/agency.CreateAgencyResponse'
+            $ref: '#/definitions/firefly-airline_internal_api.APIResponse-internal_domains_agency_CreateAgencyResponse'
         "400":
           description: Bad Request
           schema:
@@ -67,6 +104,184 @@ paths:
       summary: Create a new agency
       tags:
       - Agencies
+  /internal/airplanes:
+    get:
+      description: Returns all airplanes.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_domains_airplane.AirplaneResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: List airplanes
+      tags:
+      - Airplanes
+    post:
+      consumes:
+      - application/json
+      description: Creates a new airplane.
+      parameters:
+      - description: Airplane information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_airplane.CreateAirplaneRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_domains_airplane.AirplaneResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Create an airplane
+      tags:
+      - Airplanes
+  /internal/airplanes/{id}:
+    delete:
+      description: Deletes an airplane. Deletion fails if the airplane is referenced
+        by a flight.
+      parameters:
+      - description: Airplane ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Delete an airplane
+      tags:
+      - Airplanes
+    get:
+      description: Gets an airplane by ID.
+      parameters:
+      - description: Airplane ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_domains_airplane.AirplaneResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Get an airplane
+      tags:
+      - Airplanes
+    patch:
+      consumes:
+      - application/json
+      description: Updates an airplane.
+      parameters:
+      - description: Airplane ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Airplane information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_domains_airplane.UpdateAirplaneRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_domains_airplane.AirplaneResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AirlineAPIKey: []
+      summary: Update an airplane
+      tags:
+      - Airplanes
 securityDefinitions:
   AgencyAPIKey:
     in: header
